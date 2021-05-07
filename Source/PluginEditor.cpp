@@ -18,7 +18,7 @@ BasicOscillatorAudioProcessorEditor::BasicOscillatorAudioProcessorEditor (BasicO
     setSize (400, 300);
 
     juce::StringArray choices{ "Sine", "Saw", "Square" };
-    oscWaveSelector.addItemList(choices, 1); // why 1?
+    oscWaveSelector.addItemList(choices, 1); 
     addAndMakeVisible(oscWaveSelector);
     oscWaveSelectorAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts,"OSC1WAVETYPE", oscWaveSelector);
 
@@ -36,7 +36,6 @@ void BasicOscillatorAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
 }
 
 void BasicOscillatorAudioProcessorEditor::resized()

@@ -26,12 +26,8 @@ class BasicOscillatorAudioProcessor  : public juce::AudioProcessor
 {
 public:
 
-    OscData osc;
-    OscData& getOscillator() { return osc; }
-
-
-    //juce::dsp::Oscillator<float> osc { [](float x) { return std::sin (x); }};
-    //juce::dsp::Oscillator<float> osc{ [](float x) { return x < 0.0f ? -1.0f : 1.0f; }, 200 };
+    OscData osc_obj;
+    OscData& getOscillator() { return osc_obj; }
     juce::dsp::Gain<float> gain;
 
     //==============================================================================

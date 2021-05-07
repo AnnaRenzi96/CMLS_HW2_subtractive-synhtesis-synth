@@ -9,6 +9,38 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+//================== Osc Functions =============================================
+void OscData::setWaveType(const int choice)
+{
+    // return std::sin (x); //Sine Wave
+    // return x / MathConstants<float>::pi; // Saw Wave
+    // return x < 0.0f ? -1.0f : 1.0f;  // Square Wave
+
+    switch (choice)
+    {
+    case 0:
+        //Sine Wave
+        initialise([](float x) {return std::sin(x);});
+        break;
+
+    case 1:
+        //Saw Wave
+        initialise([](float x) {return x / juce::MathConstants<float>::pi;});
+        break;
+
+    case 2:
+        //Square Wave
+        initialise([](float x) {return x < 0.0f ? -1.0f : 1.0f;});
+        break;
+
+    default:
+        jassertfalse; // You're not supposed to be here
+        break;
+
+    }
+};
+
+
 //==============================================================================
 BasicOscillatorAudioProcessor::BasicOscillatorAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -98,11 +130,11 @@ void BasicOscillatorAudioProcessor::prepareToPlay (double sampleRate, int sample
     spec.sampleRate = sampleRate;
     spec.numChannels = getTotalNumOutputChannels();
     
-    osc.prepare (spec);
+    osc_obj.prepare (spec);
     gain.prepare (spec);
     
-    osc.setFrequency (220.0f);
-    gain.setGainLinear (0.01f);
+    osc_obj.setFrequency (220.0f);
+    gain.setGainLinear (0.10f);
 }
 
 void BasicOscillatorAudioProcessor::releaseResources()
@@ -145,9 +177,12 @@ void BasicOscillatorAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
         buffer.clear (i, 0, buffer.getNumSamples());    
 
     juce::dsp::AudioBlock<float> audioBlock { buffer };
-    float osc_param = *apvts.getRawParameterValue("OSC1WAVETYPE");
 
-    //osc.process (juce::dsp::ProcessContextReplacing<float> (audioBlock));
+    auto& osc_param = *apvts.getRawParameterValue("OSC1WAVETYPE");
+    //osc_obj.setWaveType(osc_param); //need to update wave type
+    getOscillator().setWaveType(osc_param);
+
+    osc_obj.process (juce::dsp::ProcessContextReplacing<float> (audioBlock));
     gain.process (juce::dsp::ProcessContextReplacing<float> (audioBlock));
 }
 
@@ -191,32 +226,3 @@ juce::AudioProcessorValueTreeState::ParameterLayout BasicOscillatorAudioProcesso
     return { params.begin(),params.end() };
 };
 
-void OscData::setWaveType(const int choice)
-{
-    // return std::sin (x); //Sine Wave
-    // return x / MathConstants<float>::pi; // Saw Wave
-    // return x < 0.0f ? -1.0f : 1.0f;  // Square Wave
-
-    switch (choice)
-    {
-    case 0:
-        //Sine Wave
-        initialise([](float x) {return std::sin(x);});
-        break;
-
-    case 1:
-        //Saw Wave
-        initialise([](float x) {return x / juce::MathConstants<float>::pi;});
-        break;
-
-    case 2:
-        //Square Wave
-        initialise([](float x) {return x < 0.0f ? -1.0f : 1.0f;});
-        break;
-
-    default:
-        jassertfalse; // You're not supposed to be here
-        break;
-
-    }
-};
