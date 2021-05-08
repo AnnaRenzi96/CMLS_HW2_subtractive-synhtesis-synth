@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#define SAMPLE_RATE (44100)
 
 class OscData : public juce::dsp::Oscillator<float>
 {
@@ -68,11 +69,17 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     //==============================================================================
+    // We are going to use the AudioProcessorValueTreeState class for implementing
+    // the communication between Editor and Processor
     juce::AudioProcessorValueTreeState apvts;
+    // we need to define a function where we actually associate all parameters and that
+    // returns a ParameterLayout
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
 
 private:
-    
+    // Add the DSP filter in the Processor header
+    juce::dsp::ProcessorDuplicator <juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients <float>> lowPassFilter;
+    float lastSampleRate;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicOscillatorAudioProcessor)
 };

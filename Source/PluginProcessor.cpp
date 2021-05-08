@@ -51,7 +51,8 @@ BasicOscillatorAudioProcessor::BasicOscillatorAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       ), apvts(*this, nullptr, "Parameters", createParameters())
+                       ), apvts(*this, nullptr, "Parameters", createParameters()),
+                        lowPassFilter(juce::dsp::IIR::Coefficients<float>::makeLowPass(SAMPLE_RATE, 20000.0f, 0.1))
 #endif
 {
 }
@@ -125,13 +126,16 @@ void BasicOscillatorAudioProcessor::changeProgramName (int index, const juce::St
 //==============================================================================
 void BasicOscillatorAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    // In prepare to play we need to reset our filter and initialize gain, oscillator and the filter
     juce::dsp::ProcessSpec spec;
     spec.maximumBlockSize = samplesPerBlock;
     spec.sampleRate = sampleRate;
-    spec.numChannels = getTotalNumOutputChannels();
+    spec.numChannels = getTotalNumOutputChannels();    
     
     osc_obj.prepare (spec);
     gain.prepare (spec);
+    lowPassFilter.prepare(spec);
+    lowPassFilter.reset();
     
     osc_obj.setFrequency (220.0f);
     gain.setGainLinear (0.10f);
@@ -184,6 +188,12 @@ void BasicOscillatorAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
 
     osc_obj.process (juce::dsp::ProcessContextReplacing<float> (audioBlock));
     gain.process (juce::dsp::ProcessContextReplacing<float> (audioBlock));
+
+    // Filter
+    float freq = *apvts.getRawParameterValue("FREQ");
+    float quality = *apvts.getRawParameterValue("Q");
+    *lowPassFilter.state = *juce::dsp::IIR::Coefficients<float>::makeLowPass(SAMPLE_RATE, freq, quality);
+    lowPassFilter.process(juce::dsp::ProcessContextReplacing<float>(audioBlock));
 }
 
 //==============================================================================
@@ -221,8 +231,13 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 juce::AudioProcessorValueTreeState::ParameterLayout BasicOscillatorAudioProcessor::createParameters()
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
-
+    // we push in the vector two objects using make unique template
+    // OSC
     params.push_back(std::make_unique<juce::AudioParameterChoice>("OSC1WAVETYPE", "Osc 1 Wave Type", juce::StringArray{ "Sine", "Saw", "Square" }, 0));
+    // Filter
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("FREQ", "CutOff Frequency", 50.0f, 20000.0f, 500.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("Q", "Q Factor", 0.1f, 1.0f, 0.5f));
+
     return { params.begin(),params.end() };
 };
 
