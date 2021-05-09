@@ -17,7 +17,7 @@
 class BasicOscillatorAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
-    BasicOscillatorAudioProcessorEditor (BasicOscillatorAudioProcessor&);
+    BasicOscillatorAudioProcessorEditor (SubtractiveSynthesisAudioProcessor&);
     ~BasicOscillatorAudioProcessorEditor() override;
 
     //==============================================================================
@@ -35,14 +35,14 @@ private:
     juce::Label qualityLabel;
     juce::ComboBox oscWaveSelector;
 
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> oscWaveSelectorAttachment;
-
-    // Create a slider attachments to each slider using a unique pointer to objects of 
+    // Create slider and combobox attachments using a unique pointer to objects of 
     // the class AudioProcessorValueTreeState::SliderAttachment. 
-    //NB: we create attachments AFTER the sliders
+    //NB: we create attachments AFTER the defining sliders and combobox
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> qualitySliderAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> frequencySliderAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> oscWaveSelectorAttachment;
 
-    BasicOscillatorAudioProcessor& audioProcessor;
+
+    SubtractiveSynthesisAudioProcessor& audioProcessor;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicOscillatorAudioProcessorEditor)
 };

@@ -9,13 +9,9 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-//================== Osc Functions =============================================
+//================== Osc Function =============================================
 void OscData::setWaveType(const int choice)
 {
-    // return std::sin (x); //Sine Wave
-    // return x / MathConstants<float>::pi; // Saw Wave
-    // return x < 0.0f ? -1.0f : 1.0f;  // Square Wave
-
     switch (choice)
     {
     case 0:
@@ -33,6 +29,11 @@ void OscData::setWaveType(const int choice)
         initialise([](float x) {return x < 0.0f ? -1.0f : 1.0f;});
         break;
 
+    case 3:
+        //Triangular Wave
+        initialise([](float x) {return x += (x >= 0.0f) ? delta : -delta; });
+        break;
+
     default:
         jassertfalse; // You're not supposed to be here
         break;
@@ -42,7 +43,7 @@ void OscData::setWaveType(const int choice)
 
 
 //==============================================================================
-BasicOscillatorAudioProcessor::BasicOscillatorAudioProcessor()
+SubtractiveSynthesisAudioProcessor::SubtractiveSynthesisAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
@@ -57,17 +58,17 @@ BasicOscillatorAudioProcessor::BasicOscillatorAudioProcessor()
 {
 }
 
-BasicOscillatorAudioProcessor::~BasicOscillatorAudioProcessor()
+SubtractiveSynthesisAudioProcessor::~SubtractiveSynthesisAudioProcessor()
 {
 }
 
 //==============================================================================
-const juce::String BasicOscillatorAudioProcessor::getName() const
+const juce::String SubtractiveSynthesisAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool BasicOscillatorAudioProcessor::acceptsMidi() const
+bool SubtractiveSynthesisAudioProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
     return true;
@@ -76,7 +77,7 @@ bool BasicOscillatorAudioProcessor::acceptsMidi() const
    #endif
 }
 
-bool BasicOscillatorAudioProcessor::producesMidi() const
+bool SubtractiveSynthesisAudioProcessor::producesMidi() const
 {
    #if JucePlugin_ProducesMidiOutput
     return true;
@@ -85,7 +86,7 @@ bool BasicOscillatorAudioProcessor::producesMidi() const
    #endif
 }
 
-bool BasicOscillatorAudioProcessor::isMidiEffect() const
+bool SubtractiveSynthesisAudioProcessor::isMidiEffect() const
 {
    #if JucePlugin_IsMidiEffect
     return true;
@@ -94,37 +95,37 @@ bool BasicOscillatorAudioProcessor::isMidiEffect() const
    #endif
 }
 
-double BasicOscillatorAudioProcessor::getTailLengthSeconds() const
+double SubtractiveSynthesisAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int BasicOscillatorAudioProcessor::getNumPrograms()
+int SubtractiveSynthesisAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int BasicOscillatorAudioProcessor::getCurrentProgram()
+int SubtractiveSynthesisAudioProcessor::getCurrentProgram()
 {
     return 0;
 }
 
-void BasicOscillatorAudioProcessor::setCurrentProgram (int index)
+void SubtractiveSynthesisAudioProcessor::setCurrentProgram (int index)
 {
 }
 
-const juce::String BasicOscillatorAudioProcessor::getProgramName (int index)
+const juce::String SubtractiveSynthesisAudioProcessor::getProgramName (int index)
 {
     return {};
 }
 
-void BasicOscillatorAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void SubtractiveSynthesisAudioProcessor::changeProgramName (int index, const juce::String& newName)
 {
 }
 
 //==============================================================================
-void BasicOscillatorAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void SubtractiveSynthesisAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // In prepare to play we need to reset our filter and initialize gain, oscillator and the filter
     juce::dsp::ProcessSpec spec;
@@ -133,22 +134,21 @@ void BasicOscillatorAudioProcessor::prepareToPlay (double sampleRate, int sample
     spec.numChannels = getTotalNumOutputChannels();    
     
     osc_obj.prepare (spec);
-    gain.prepare (spec);
     lowPassFilter.prepare(spec);
     lowPassFilter.reset();
     
-    osc_obj.setFrequency (220.0f);
-    gain.setGainLinear (0.10f);
+    //osc_obj.setFrequency (220.0f);
+    osc_obj.gain.setGainLinear (0.20f);
 }
 
-void BasicOscillatorAudioProcessor::releaseResources()
+void SubtractiveSynthesisAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool BasicOscillatorAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool SubtractiveSynthesisAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
   #if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
@@ -171,7 +171,7 @@ bool BasicOscillatorAudioProcessor::isBusesLayoutSupported (const BusesLayout& l
 }
 #endif
 
-void BasicOscillatorAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void SubtractiveSynthesisAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
@@ -187,7 +187,7 @@ void BasicOscillatorAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
     getOscillator().setWaveType(osc_param);
 
     osc_obj.process (juce::dsp::ProcessContextReplacing<float> (audioBlock));
-    gain.process (juce::dsp::ProcessContextReplacing<float> (audioBlock));
+    //gain.process (juce::dsp::ProcessContextReplacing<float> (audioBlock));
 
     // Filter
     float freq = *apvts.getRawParameterValue("FREQ");
@@ -197,25 +197,25 @@ void BasicOscillatorAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
 }
 
 //==============================================================================
-bool BasicOscillatorAudioProcessor::hasEditor() const
+bool SubtractiveSynthesisAudioProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-juce::AudioProcessorEditor* BasicOscillatorAudioProcessor::createEditor()
+juce::AudioProcessorEditor* SubtractiveSynthesisAudioProcessor::createEditor()
 {
     return new BasicOscillatorAudioProcessorEditor (*this);
 }
 
 //==============================================================================
-void BasicOscillatorAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void SubtractiveSynthesisAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
 }
 
-void BasicOscillatorAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void SubtractiveSynthesisAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
@@ -225,17 +225,17 @@ void BasicOscillatorAudioProcessor::setStateInformation (const void* data, int s
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new BasicOscillatorAudioProcessor();
+    return new SubtractiveSynthesisAudioProcessor();
 }
 
-juce::AudioProcessorValueTreeState::ParameterLayout BasicOscillatorAudioProcessor::createParameters()
+juce::AudioProcessorValueTreeState::ParameterLayout SubtractiveSynthesisAudioProcessor::createParameters()
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
     // we push in the vector two objects using make unique template
     // OSC
-    params.push_back(std::make_unique<juce::AudioParameterChoice>("OSC1WAVETYPE", "Osc 1 Wave Type", juce::StringArray{ "Sine", "Saw", "Square" }, 0));
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("OSC1WAVETYPE", "Osc 1 Wave Type", juce::StringArray{ "Sine", "Saw", "Square", "Triangle" }, 0));
     // Filter
-    params.push_back(std::make_unique<juce::AudioParameterFloat>("FREQ", "CutOff Frequency", 50.0f, 20000.0f, 500.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("FREQ", "CutOff Frequency", 50.0f, 1500.0f, 500.0f));
     params.push_back(std::make_unique<juce::AudioParameterFloat>("Q", "Q Factor", 0.1f, 1.0f, 0.5f));
 
     return { params.begin(),params.end() };

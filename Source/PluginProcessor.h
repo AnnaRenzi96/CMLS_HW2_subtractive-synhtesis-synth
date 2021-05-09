@@ -10,12 +10,14 @@
 
 #include <JuceHeader.h>
 #define SAMPLE_RATE (44100)
+#define delta (0.00001)
 
+// Creating a Class OscData containing a gain and the wave types
 class OscData : public juce::dsp::Oscillator<float>
 {
 public:
     void setWaveType(const int choice);
-
+    juce::dsp::Gain<float> gain;
 private:
 
 };
@@ -23,17 +25,17 @@ private:
 //==============================================================================
 /**
 */
-class BasicOscillatorAudioProcessor  : public juce::AudioProcessor
+class SubtractiveSynthesisAudioProcessor  : public juce::AudioProcessor
 {
 public:
-
+    // Defining an object of OscData class
     OscData osc_obj;
+    // Here I define a pointer that helps us to change the wave type in processBlock
     OscData& getOscillator() { return osc_obj; }
-    juce::dsp::Gain<float> gain;
 
     //==============================================================================
-    BasicOscillatorAudioProcessor();
-    ~BasicOscillatorAudioProcessor() override;
+    SubtractiveSynthesisAudioProcessor();
+    ~SubtractiveSynthesisAudioProcessor() override;
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -72,7 +74,7 @@ public:
     // We are going to use the AudioProcessorValueTreeState class for implementing
     // the communication between Editor and Processor
     juce::AudioProcessorValueTreeState apvts;
-    // we need to define a function where we actually associate all parameters and that
+    // We need to define a function where we actually associate all parameters and that
     // returns a ParameterLayout
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
 
@@ -81,5 +83,5 @@ private:
     juce::dsp::ProcessorDuplicator <juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients <float>> lowPassFilter;
     float lastSampleRate;
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicOscillatorAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SubtractiveSynthesisAudioProcessor)
 };
