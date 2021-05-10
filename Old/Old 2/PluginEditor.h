@@ -33,7 +33,6 @@ private:
     juce::Slider frequencySlider;
     juce::Label frequencyLabel;
     juce::Label qualityLabel;
-    juce::Label oscLabel;
     juce::ComboBox oscWaveSelector;
 
     // Create slider and combobox attachments using a unique pointer to objects of 

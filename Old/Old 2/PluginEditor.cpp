@@ -41,9 +41,6 @@ BasicOscillatorAudioProcessorEditor::BasicOscillatorAudioProcessorEditor (Subtra
     addAndMakeVisible(frequencyLabel);
 
     // ComboBox
-    oscLabel.setText("Wave Type", juce::dontSendNotification);
-    addAndMakeVisible(oscLabel);
-
     juce::StringArray choices{ "Sine", "Saw", "Square", "Triangle" };
     oscWaveSelector.addItemList(choices, 1); // This give to element's choices array an ID number that corresponds to their position in the array
     addAndMakeVisible(oscWaveSelector);
@@ -81,6 +78,5 @@ void BasicOscillatorAudioProcessorEditor::resized()
     frequencyLabel.setBounds(20, 50, 130, 20);
     qualitySlider.setBounds(260, 80, 100, 100);
     qualityLabel.setBounds(280, 50, 130, 20);
-    oscLabel.setBounds(160, 200, 130, 20);
-    oscWaveSelector.setBounds(140, 230, 120, 30);
+    oscWaveSelector.setBounds(140, 200, 120, 30);
 }
