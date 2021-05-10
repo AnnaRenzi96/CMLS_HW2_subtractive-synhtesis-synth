@@ -20,7 +20,11 @@ BasicOscillatorAudioProcessorEditor::BasicOscillatorAudioProcessorEditor (Subtra
     // Initialize the sliders and combobox in the Editor constructor
 
     // Sliders
-    qualitySlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
+    getLookAndFeel().setColour
+    (juce::Slider::thumbColourId,
+        juce::Colours::darkred);
+
+    qualitySlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
     qualitySlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, true, 100, 20);
     qualitySlider.setRange(0.0, 1.0, 0.1);
     addAndMakeVisible(qualitySlider);
@@ -28,7 +32,7 @@ BasicOscillatorAudioProcessorEditor::BasicOscillatorAudioProcessorEditor (Subtra
     qualityLabel.setText("Q Factor", juce::dontSendNotification);
     addAndMakeVisible(qualityLabel);
 
-    frequencySlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
+    frequencySlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     frequencySlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, true, 100, 20);
     frequencySlider.setRange(50.0, 1500.0, 1.0);
     addAndMakeVisible(frequencySlider);
@@ -57,8 +61,12 @@ void BasicOscillatorAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-    g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
+    //g.setFont (20.0f);
+    g.fillAll(juce::Colours::rosybrown);
+    g.setColour(juce::Colours::brown);
+
+    auto centralArea = getLocalBounds().toFloat().reduced(10.0f);
+    g.drawRoundedRectangle(centralArea, 5.0f, 3.0f);
 }
 
 void BasicOscillatorAudioProcessorEditor::resized()
@@ -66,9 +74,9 @@ void BasicOscillatorAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
     // We place them in the correct positions
-    frequencySlider.setBounds(10, 80, 100, 100);
-    frequencyLabel.setBounds(10, 50, 130, 20);
-    qualitySlider.setBounds(200, 80, 100, 100);
-    qualityLabel.setBounds(200, 50, 130, 20);
-    oscWaveSelector.setBounds(10, 10, 100, 30);
+    frequencySlider.setBounds(25, 80, 100, 100);
+    frequencyLabel.setBounds(20, 50, 130, 20);
+    qualitySlider.setBounds(260, 80, 100, 100);
+    qualityLabel.setBounds(280, 50, 130, 20);
+    oscWaveSelector.setBounds(140, 200, 120, 30);
 }
