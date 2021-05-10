@@ -15,14 +15,14 @@ BasicOscillatorAudioProcessorEditor::BasicOscillatorAudioProcessorEditor (Subtra
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 300);
+    setSize (370, 500);
 
     // Initialize the sliders and combobox in the Editor constructor
 
     // Sliders
     getLookAndFeel().setColour
     (juce::Slider::thumbColourId,
-        juce::Colours::darkred);
+        juce::Colours::brown);
 
     frequencySlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     frequencySlider.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, true, 100, 20);
@@ -30,17 +30,20 @@ BasicOscillatorAudioProcessorEditor::BasicOscillatorAudioProcessorEditor (Subtra
     addAndMakeVisible(frequencySlider);
 
     frequencyLabel.setText("CutOff Frequency", juce::dontSendNotification);
+    frequencyLabel.setFont(juce::Font(18.0f));
     addAndMakeVisible(frequencyLabel);
 
     // ComboBoxes
-    filterLabel.setText("Wave Type", juce::dontSendNotification);
-    addAndMakeVisible(filterLabel);
+    oscLabel.setText("Wave Type", juce::dontSendNotification);
+    oscLabel.setFont(juce::Font(18.0f));
+    addAndMakeVisible(oscLabel);
 
     juce::StringArray osc_choices{ "Sine", "Saw", "Square", "Triangle" };
     oscWaveSelector.addItemList(osc_choices, 1); // This give to element's choices array an ID number that corresponds to their position in the array
     addAndMakeVisible(oscWaveSelector);
 
     filterLabel.setText("Filter Type", juce::dontSendNotification);
+    filterLabel.setFont(juce::Font(18.0f));
     addAndMakeVisible(filterLabel);
 
     juce::StringArray filter_choices{"Low-Pass","Band-Pass","High-Pass"};
@@ -75,12 +78,13 @@ void BasicOscillatorAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
     // We place them in the correct positions
-    frequencySlider.setBounds(25, 80, 100, 100);
-    frequencyLabel.setBounds(20, 50, 130, 20);
 
-    oscLabel.setBounds(140, 180, 130, 20);
-    oscWaveSelector.setBounds(140, 200, 120, 30);
+    oscLabel.setBounds(135, 80, 100, 40);
+    oscWaveSelector.setBounds(110, 130, 150, 30);
 
-    filterSelector.setBounds(140, 40, 120, 30);
-    filterLabel.setBounds(140, 20, 130, 20);
+    frequencySlider.setBounds(35, 350, 120, 120);
+    frequencyLabel.setBounds(25, 320, 140, 40);
+
+    filterSelector.setBounds(210, 370, 120, 30);
+    filterLabel.setBounds(220, 320, 140, 40);
 }
