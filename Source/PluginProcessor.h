@@ -16,8 +16,7 @@
 class OscData : public juce::dsp::Oscillator<float>
 {
 public:
-    void setWaveType(const int choice);
-    juce::dsp::Gain<float> gain;
+    void setWaveType(const int choice, const float amp);
 private:
 
 };
@@ -82,6 +81,9 @@ private:
     // Add the DSP filter in the Processor header
     juce::dsp::ProcessorDuplicator <juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients <float>> lowPassFilter;
     float lastSampleRate;
+
+    float amp;
+    float car_freq;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SubtractiveSynthesisAudioProcessor)
 };

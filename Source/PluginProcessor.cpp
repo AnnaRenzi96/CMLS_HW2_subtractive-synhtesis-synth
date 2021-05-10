@@ -10,28 +10,28 @@
 #include "PluginEditor.h"
 
 //================== Osc Function =============================================
-void OscData::setWaveType(const int choice)
-{
+void OscData::setWaveType(const int choice, const float amp)
+{   
     switch (choice)
     {
     case 0:
         //Sine Wave
-        initialise([](float x) {return std::sin(x);});
+        initialise([=](float x) {return ((std::sin(x)) * amp);});
         break;
 
     case 1:
         //Saw Wave
-        initialise([](float x) {return x / juce::MathConstants<float>::pi;});
+        initialise([=](float x) {return amp * (x / juce::MathConstants<float>::pi);});
         break;
 
     case 2:
         //Square Wave
-        initialise([](float x) {return x < 0.0f ? -1.0f : 1.0f;});
+        initialise([=](float x) {return amp * (x < 0.0f ? -1.0f : 1.0f);});
         break;
 
     case 3:
         //Triangular Wave
-        initialise([](float x) {return x += (x >= 0.0f) ? delta : -delta; });
+        initialise([=](float x) {return amp *(x += (x >= 0.0f) ? delta : -delta); });
         break;
 
     default:
@@ -136,9 +136,6 @@ void SubtractiveSynthesisAudioProcessor::prepareToPlay (double sampleRate, int s
     osc_obj.prepare (spec);
     lowPassFilter.prepare(spec);
     lowPassFilter.reset();
-    
-    //osc_obj.setFrequency (220.0f);
-    osc_obj.gain.setGainLinear (0.20f);
 }
 
 void SubtractiveSynthesisAudioProcessor::releaseResources()
@@ -180,14 +177,43 @@ void SubtractiveSynthesisAudioProcessor::processBlock (juce::AudioBuffer<float>&
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());    
 
+    //********************************************************************************************//
+    // 9) implement the actual change in note velocity: for every message we are going to create a new
+    // message equal to the original one except for the velocity, add it to a buffer of midi messages and
+    // then we swap the modified midi buffer with the original one
+    buffer.clear();
+    juce::MidiBuffer processedMidi;
+    int time;
+    juce::MidiMessage m;
+    
+    for (juce::MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);) {
+        if (m.isNoteOn())
+        {
+            amp = 0.1;
+            car_freq = m.getMidiNoteInHertz(m.getNoteNumber());
+            osc_obj.setFrequency(car_freq);
+        }
+        else if (m.isNoteOff())
+        {
+            amp = 0;
+        }
+        else if (m.isAftertouch())
+        {
+        }
+        else if (m.isPitchWheel())
+        {
+        }
+        processedMidi.addEvent (m, time);
+    }   
+    midiMessages.swapWith(processedMidi);        
+        
     juce::dsp::AudioBlock<float> audioBlock { buffer };
 
     auto& osc_param = *apvts.getRawParameterValue("OSC1WAVETYPE");
-    //osc_obj.setWaveType(osc_param); //need to update wave type
-    getOscillator().setWaveType(osc_param);
+    //need to update wave type
+    getOscillator().setWaveType(osc_param, amp);
 
     osc_obj.process (juce::dsp::ProcessContextReplacing<float> (audioBlock));
-    //gain.process (juce::dsp::ProcessContextReplacing<float> (audioBlock));
 
     // Filter
     float freq = *apvts.getRawParameterValue("FREQ");
