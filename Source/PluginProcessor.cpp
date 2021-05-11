@@ -34,6 +34,15 @@ void OscData::setWaveType(const int choice, const float amp)
         initialise([=](float x) {return amp *(x += (x >= 0.0f) ? delta : -delta); });
         break;
 
+    case 4:
+        //Pinky Wave
+        initialise([=](float x) {return ((std::sin(x) * std::cos(x) * std::sin(x)) * 5 * amp); });
+        break;
+    case 5:
+        //Ponky Wave
+        initialise([=](float x) {return (x*x*x* std::cos(x*5) * (x += (x >= 0.0f) ? delta : -delta) * amp / 10); });
+        break;
+
     default:
         jassertfalse; // You're not supposed to be here
         break;
@@ -259,7 +268,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout SubtractiveSynthesisAudioPro
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
     // we push in the vector two objects using make unique template
     // OSC
-    params.push_back(std::make_unique<juce::AudioParameterChoice>("OSC1WAVETYPE", "Osc 1 Wave Type", juce::StringArray{ "Sine", "Saw", "Square", "Triangle" }, 0));
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("OSC1WAVETYPE", "Osc 1 Wave Type", juce::StringArray{ "Sine", "Saw", "Square", "Triangle", "Pinky", "Ponky" }, 0));
     // Filter
     params.push_back(std::make_unique<juce::AudioParameterFloat>("FREQ", "CutOff Frequency", 50.0f, 1500.0f, 500.0f));
     params.push_back(std::make_unique<juce::AudioParameterFloat>("Q", "Q Factor", 0.1f, 1.0f, 0.5f));

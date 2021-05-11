@@ -56,7 +56,7 @@ BasicOscillatorAudioProcessorEditor::BasicOscillatorAudioProcessorEditor (Subtra
     oscLabel.setFont(juce::Font(18.0f));
     addAndMakeVisible(oscLabel);
 
-    juce::StringArray choices{ "Sine", "Saw", "Square", "Triangle" };
+    juce::StringArray choices{ "Sine", "Saw", "Square", "Triangle", "Pinky", "Ponky" };
     oscWaveSelector.addItemList(choices, 1); // This give to element's choices array an ID number that corresponds to their position in the array
     addAndMakeVisible(oscWaveSelector);
 
