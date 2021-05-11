@@ -29,6 +29,8 @@ private:
     // access the processor object that created it.
 
     // add the Sliders and ComboBox to the Editor
+    juce::Label oscTitle;
+    juce::Label filtTitle;
     juce::Slider qualitySlider;
     juce::Slider frequencySlider;
     juce::Label frequencyLabel;
