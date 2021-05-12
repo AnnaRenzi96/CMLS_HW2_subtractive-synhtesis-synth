@@ -1,12 +1,23 @@
 # CMLS_HW2_subtractive synthesis synthesizer
-# Pinkthesizer
+# Pinkesizer
 
 ## Description
 The Synhesizer is based on:
 - MIDI input 
-- a waveform generator
-- a filter
-- filtered output 
+- A waveform generator
+- A filter
+- Ailtered output 
+
+## Waveform Types 
+- Sine
+- Sawtooth
+- Square
+- Triangular
+- Two more customized waveforms
+
+## Low Pass Filter Parameters
+- Cut-off Frequency
+- Quality factor 
 
 ## Editor 
 
