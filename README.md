@@ -19,6 +19,15 @@ The Synhesizer is based on:
 - Cut-off Frequency
 - Quality factor 
 
+## Set Up
+- Projucer Application
+- New Project 
+- Plug in Basic
+- Add Source folder to the File explorer
+- Plugin characteristics: Plugin MIDI input
+- Add DSP to Modules
+- Open an IDE
+
 ## Editor 
 
 
