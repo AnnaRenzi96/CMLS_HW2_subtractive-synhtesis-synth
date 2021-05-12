@@ -1,5 +1,5 @@
 # CMLS_HW2_subtractive synthesis synthesizer
-## Pinkthesizer
+# Pinkthesizer
 
 ## Description
 The Synhesizer is based on:
