@@ -13,7 +13,7 @@ The Synhesizer is based on:
 - Sawtooth
 - Square
 - Triangular
-- Two more customized waveforms
+- Pinky and Ponky (customized waveforms)
 
 ## Low Pass Filter Parameters
 - Cut-off Frequency
