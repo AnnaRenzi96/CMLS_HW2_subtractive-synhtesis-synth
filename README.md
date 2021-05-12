@@ -6,7 +6,7 @@ The Synhesizer is based on:
 - MIDI input 
 - A waveform generator
 - A filter
-- Ailtered output 
+- A filtered output 
 
 ## Waveform Types 
 - Sine
