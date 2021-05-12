@@ -187,8 +187,8 @@ void SubtractiveSynthesisAudioProcessor::processBlock (juce::AudioBuffer<float>&
         buffer.clear (i, 0, buffer.getNumSamples());    
 
     //********************************************************************************************//
-    // 9) implement the actual change in note velocity: for every message we are going to create a new
-    // message equal to the original one except for the velocity, add it to a buffer of midi messages and
+    // for every message we are going to create a new
+    // message equal to the original one, add it to a buffer of midi messages and
     // then we swap the modified midi buffer with the original one
     buffer.clear();
     juce::MidiBuffer processedMidi;
